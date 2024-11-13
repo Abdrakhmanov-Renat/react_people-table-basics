@@ -8,14 +8,14 @@ import { PeopleTable } from '../PeopleTable';
 export const People: React.FC = () => {
   const [people, setPeople] = useState<Person[]>([]);
   const [loader, setLoader] = useState<boolean>();
-  const [errorMassege, setErrorMassege] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     setLoader(true);
 
     getPeople()
       .then(setPeople)
-      .catch(() => setErrorMassege('Something went wrong'))
+      .catch(() => setErrorMessage('Something went wrong'))
       .finally(() => setLoader(false));
   }, []);
 
@@ -24,19 +24,42 @@ export const People: React.FC = () => {
       <div className="box table-container">
         {loader && <Loader />}
 
-        {errorMassege && (
+        {errorMessage && (
           <p data-cy="peopleLoadingError" className="has-text-danger">
-            {errorMassege}
+            {errorMessage}
           </p>
         )}
 
-        {!errorMassege && people.length === 0 && !loader && (
+        {!errorMessage && people.length === 0 && !loader && (
           <p data-cy="noPeopleMessage">There are no people on the server</p>
         )}
 
-        {people.map(person => {
-          return <PeopleTable person={person} key={person.slug} />;
-        })}
+        {!loader && people.length > 0 && (
+          <table
+            data-cy="peopleTable"
+            className="table is-striped is-hoverable is-narrow is-fullwidth"
+          >
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Sex</th>
+                <th>Born</th>
+                <th>Died</th>
+                <th>Mother</th>
+                <th>Father</th>
+              </tr>
+            </thead>
+            <tbody>
+              {people.map(person => (
+                <PeopleTable
+                  person={person}
+                  people={people}
+                  key={person.slug}
+                />
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
